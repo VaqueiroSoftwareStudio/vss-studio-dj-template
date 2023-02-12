@@ -6,13 +6,16 @@ from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
-from vss.apps.blog.sitemaps import ArticleSitemap
-from vss_studio.apps.catalog.sitemaps import ServiceSitemap
+try:
+    from vss.apps.blog.sitemaps import ArticleSitemap
+    from vss_studio.apps.catalog.sitemaps import ServiceSitemap
 
-sitemaps = {
-    'articles' : ArticleSitemap,
-    'services' : ServiceSitemap,
-}
+    sitemaps = {
+        'articles' : ArticleSitemap,
+        'services' : ServiceSitemap,
+    }
+except ImportError:
+    sitemaps = {}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
