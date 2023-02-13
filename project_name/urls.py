@@ -4,6 +4,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
+from django.contrib.staticfiles.views import serve
 from django.urls import include, path
 
 try:
@@ -37,3 +38,6 @@ urlpatterns = [
     #     {% endif %}" />
     prefix_default_language = True,
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += tuple(static(settings.STATIC_URL, view=serve, show_indexes=True))

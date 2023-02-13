@@ -102,6 +102,7 @@ WSGI_APPLICATION = '{{ project_name }}.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 if RUNNING_PROD_SERVER:
+    DEBUG_PROPAGATE_EXCEPTIONS = True
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
