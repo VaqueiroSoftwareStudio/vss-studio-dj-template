@@ -21,7 +21,7 @@ RUNNING_PROD_SERVER = True if os.getenv('SETTINGS_MODE', '') == 'prod' else Fals
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i3$qhoe$+nq*n6*$*!@a94q1i7kh8phju$!6d7+umsg8c1nns#'
+SECRET_KEY = '{{ secret_key }}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if RUNNING_PROD_SERVER else True
