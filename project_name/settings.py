@@ -215,12 +215,6 @@ if RUNNING_PROD_SERVER:
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
 
-# Django management
-ADMINS = (
-    ('VSS', 'contacto@vaqueiro.com.mx'),
-)
-
-MANAGERS = ADMINS
 
 CACHES = {
     'default': {
