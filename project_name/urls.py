@@ -25,7 +25,7 @@ urlpatterns = [
     
 ] + i18n_patterns(
     path('', include('vss.urls')),
-    path('', include('vss.apps.store.website.urls')),
+    path('', include('vss_studio.apps.website.urls')),
     # NOTE - Si se cambia prefix_default_language a False, hay que actualizar
     # el modo en que se cambia de idioma. Actualmente hacemos un
     # 'slice' de los tres primeros caracteres.
