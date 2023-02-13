@@ -167,7 +167,7 @@ USE_TZ = True
 
 LANGUAGES = [
     ('es', _('Español')),
-    #('en', _('Inglés')),
+    ('en', _('Inglés')),
 ]
 
 
@@ -184,6 +184,9 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.dirname(BASE_DIR) + '/public/static/'
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.dirname(BASE_DIR) + '/public/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
