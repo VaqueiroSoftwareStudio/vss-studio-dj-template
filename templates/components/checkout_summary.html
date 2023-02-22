@@ -1,0 +1,58 @@
+{% load currency i18n %}
+<div class="card card-lg">
+    <img class="card-img-top" src="{{ service.cover.url }}" alt="{{ service.title }}">
+    <div class="card-body border rounded-bottom">
+        <h2 class="h4 card-title text-center mb-2">{{ service.title }}</h2>
+        <table class="table table-align-middle">
+            <tbody>
+                <tr>
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Fecha' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ schedule_data.date|date:"d F Y" }}</td>
+                </tr>
+                <tr>
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Hora' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ schedule_data.time }}</td>
+                </tr>
+                <tr>
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Duración' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ service.duration_display }}</td>
+                </tr>
+                <tr>
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Paquete' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ schedule_data.option.name }}</td>
+                </tr>
+                <tr class="table-group-divider">
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Precio' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end"><small>$</small> {{ schedule_data.amounts.option_price|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+                {% if offer %}
+                <tr>
+                    <th class="lh-1 py-3 px-0">{% translate 'Promoción' %} {{ offer.get_discount_display }}</th>
+                    <td class="lh-1 py-3 px-0 text-end">- {{ schedule_data.amounts.offer|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+                {% endif %}
+                {% for extra in schedule_data.extras %}
+                <tr>
+                    <th class="lh-1 py-3 px-0">{{ extra.name }}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ extra.price|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Extras' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end">{{ schedule_data.amounts.extras|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+                {% endfor %}
+                {% if coupon_data.coupon %}
+                <tr>
+                    <th class="lh-1 py-3 px-0">{% translate 'Cupón' %} {{ coupon_data.coupon.code }}</th>
+                    <td class="lh-1 py-3 px-0 text-end">- {{ schedule_data.amounts.coupon|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+                {% endif %}
+                <tr class="table-group-divider">
+                    <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Total' %}</th>
+                    <td class="lh-1 py-3 px-0 text-end"><small>$</small> {{ schedule_data.amounts.total|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

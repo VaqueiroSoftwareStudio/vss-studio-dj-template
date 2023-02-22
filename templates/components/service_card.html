@@ -1,0 +1,33 @@
+{% load i18n %}
+<div class="card card-transition h-100 p-2">
+    <a href="{% if offer %}{{ offer.get_absolute_url }}{% else %}{{ service.get_absolute_url }}{% endif %}">
+        <img class="card-img" src="{{ service.cover.url }}" alt="{{ service.title }}">
+    </a>
+    <div class="card-body">
+        {% if offer %}
+        <div class="row align-items-center mb-3 badge d-flex bg-warning">
+            <div class="col-8 text-start">
+                <span class="text-light fs-6 fw-light">{{ offer.validity_short_description }}</span>
+            </div>
+            <div class="col-4 border-start text-end">
+                <span>
+                    <span class="fs-4 text-light fw-bold">-{{ offer.discount }}</span>
+                    <span class="fs-6 align-top text-light fw-bold">%</span>
+                </span>
+            </div>
+        </div>
+        <h5 class="card-title mb-4">{{ service.title }}</h5>
+        {% endif %}
+        {% if not offer %}
+        <h5 class="card-title">{{ service.title }}</h5>
+        <div class="mb-4 badge px-0 d-flex justify-content-between">
+            <span class="text-body">{% translate 'A partir de' %}</span>
+            <span>
+                <span class="fs-6 align-top text-dark fw-bold">$</span>
+                <span class="fs-4 text-dark fw-bold">{{ service.min_price_display }}</span>
+            </span>
+        </div>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-info w-100" href="{% if offer %}{{ offer.get_absolute_url }}{% else %}{{ service.get_absolute_url }}{% endif %}">{% translate 'Reservar' %} <i class="bi-chevron-right small ms-1"></i></a>
+    </div>
+</div>

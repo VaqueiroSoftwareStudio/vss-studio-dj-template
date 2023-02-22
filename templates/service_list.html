@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ vss_studio.headers.services_title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="display-3 text-magnolia-cream">{{ vss_studio.headers.services_title }}</h1>
+                {% if vss_studio.headers.services_subtitle %}
+                    <p class="lead text-light text-opacity-75">{{ vss_studio.headers.services_subtitle }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-t-1 content-space-b-3">
+    {% for service in services %}
+        <div class="row align-items-md-center content-space-1">
+            <div class="col-md-6 order-md-2 mb-10 mb-md-0">
+                <a href="{{ service.get_absolute_url }}" role="button">
+                    <div class="banner-bottom-end-n3rem">
+                        <img class="img-fluid" src="{{ service.cover.url }}" alt="{{ service.title }}">
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <div class="pe-md-5">
+                    <h2 class="h3 mb-7">{{ service.title }}</h2>
+                    <a href="{{ service.get_absolute_url }}" class="btn btn-sm btn-outline-info">{% translate 'Más información' %} <i class="bi-chevron-right small ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% include "partials/pagination.html" %}
+</div>
+{% endblock %}

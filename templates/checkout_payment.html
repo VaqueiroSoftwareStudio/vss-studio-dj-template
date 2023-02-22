@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load i18n phone_tags currency %}
+{% block page_title %}{{ service.title }} {% translate 'Agenda una cita' %} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="text-magnolia-cream">{% translate 'Agenda una Cita' %}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-t-1 content-space-b-1">
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div class="row mb-5 mb-sm-5 justify-content-between">
+            <div class="col-12 col-lg-6">
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <strong>{% translate 'Error.' %}</strong> {% translate 'Revisa el formulario e intenta nuevamente.' %}
+                    </div>
+                {% endif %}
+                <h2 class="h3 mb-4">{% translate 'Datos de Contacto' %}</h2>
+                <table class="table table-align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Nombre' %}</th>
+                            <td class="lh-1 py-3 px-0 text-end">{{ contact_data.first_name }} {{ contact_data.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Teléfono' %}</th>
+                            <td class="lh-1 py-3 px-0 text-end">{{ contact_data.phone|phone_format }}</td>
+                        </tr>
+                        <tr>
+                            <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Email' %}</th>
+                            <td class="lh-1 py-3 px-0 text-end">{{ contact_data.email }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="col-12 col-lg-6 mb-5">
+                    <a class="btn btn-outline-info btn-sm w-100" href="{% url 'vss_studio_checkout_contact' service.slug %}">
+                        {% translate 'Actualizar' %}
+                    </a>
+                </div>
+                <h2 class="h3 mb-4">{% translate 'Datos de Pago' %}</h2>
+                <div class="row">
+                    <div class="col-12">
+                        {# NOTE: INCLUIMOS ESTE CAMPO MANUALMENTE PARA PODER CONTROLAR LA VISIBILIDAD DE LOS BOTONES Y MEJORAR LA UX #}
+                        <div id="paymentMethodField" class="form-group">
+                            <label class="form-label w-100">{% translate 'Selecciona un método de pago' %} <abbr title="{% translate 'Obligatorio' %}">*</abbr></label>
+                            <div class="custom-control custom-radio px-0">
+                                {% if vss_studio.payment_setup.enable_paypal %}
+                                <div class="form-check mb-3">
+                                    <input type="radio" name="payment_method" value="PAYPAL" class="form-check-input" id="id_payment_method_0" required="" checked>
+                                    <label class="custom-control-label mb-2" for="id_payment_method_0">{% translate 'PayPal' %}</label>
+                                    <div id="paypal-button-container"></div>
+                                </div>
+                                {% endif %}
+                                {% if vss_studio.payment_setup.enable_bank_transfer %}
+                                <div class="form-check mb-3">
+                                    <input type="radio" name="payment_method" value="BANK_TRANSFER" class="form-check-input" id="id_payment_method_1" required="">
+                                    <label class="custom-control-label" for="id_payment_method_1">{% translate 'Transferencia Bancaria' %}<br><small class="text-muted">{{ vss_studio.payment_setup.bank_transfer_instructions|safe }}</small></label>
+                                </div>
+                                {% endif %}
+                                {% if vss_studio.payment_setup.enable_cash_deposit %}
+                                <div class="form-check">
+                                    <input type="radio" name="payment_method" value="DEPOSIT" class="form-check-input" id="id_payment_method_2" required="">
+                                    <label class="custom-control-label" for="id_payment_method_2">{% translate 'Depósito en Efectivo' %}<br><small class="text-muted">{{ vss_studio.payment_setup.cash_deposit_instructions|safe }}</small></label>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div id="paymentReceivedAlert" class="d-none">
+                            <div class="alert alert-info" role="alert">
+                                <h5 class="alert-heading">{% translate '¡Gracias por tu pago!' %}</h5>
+                                <p class="mb-0">{% translate "Haz clic en 'Agendar Cita' para terminar." %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mb-5">
+                        <button id="placeOrderBtn" type="submit" class="btn btn-info w-100 mt-5 d-none">{% translate 'Agendar Cita' %}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-5">
+                {% include "components/checkout_summary.html" %}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block page_scripts %}
+<script>
+    var submitBtn = document.getElementById('placeOrderBtn');
+    var paymentMethods = document.getElementsByName('payment_method');
+    [...paymentMethods].forEach((paymentMethod) => {
+        paymentMethod.addEventListener('change', (ev) => {
+            ev.target.value == 'PAYPAL' ? submitBtn.classList.add('d-none') : submitBtn.classList.remove('d-none');
+        });
+    });
+</script>
+{% with paypal_client_id=vss_studio.payment_setup.get_paypal_client_id %}
+    {% if vss_studio.payment_setup.enable_paypal and paypal_client_id %}
+    <script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency={{ vss_studio.store_setup.currency }}&intent=capture"></script>
+    <script>
+        var placeOrderForm = document.getElementById('placeOrderForm');
+        var placeOrderBtn = document.getElementById('placeOrderBtn');
+        var paymentMethodField = document.getElementById('paymentMethodField');
+        var paymentReceivedAlert = document.getElementById('paymentReceivedAlert');
+        var paymentPayload = document.getElementById('id_payment_payload');
+        paypal.Buttons({
+            style:{
+                label: 'pay',
+                height: 48,
+            },
+            fundingSource: paypal.FUNDING.PAYPAL,
+            createOrder : function(data, actions){
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '{{ schedule_data.amounts.total|currency }}',
+                        }
+                    }],
+                    application_context: {
+                        shipping_preference: "NO_SHIPPING"
+                    }
+                });
+            },
+            onApprove: function(data, actions) {
+                actions.order.capture().then(function(details){
+                    paymentMethodField.classList.add("d-none");
+                    paymentReceivedAlert.classList.remove("d-none");
+                    paymentPayload.value = JSON.stringify(details);
+                    placeOrderForm.submit();
+                });
+            },
+            onCancel: function(data){
+                placeOrderBtn.classList.add("d-none");
+            },
+            onError: function(err){
+                console.log('Error identificado:');
+                console.log(err);
+            }
+        }).render('#paypal-button-container');
+    </script>
+    {% endif %}
+{% endwith %}
+{% endblock %}

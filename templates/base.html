@@ -1,0 +1,28 @@
+{% load i18n static %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|lower }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="author" content="Vaqueiro Software Studio @ https://vaqueiro.com.mx/">
+        <title>{% block page_title %}{% endblock %}</title>
+        <link rel="shortcut icon" href="{{ vss.branding.get_favicon }}">
+        <link rel="stylesheet" href="{% static 'theme/vendor/bootstrap/dist/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'theme/vendor/bootstrap-icons/font/bootstrap-icons.css' %}">        
+        {% block page_vendor_css %}{% endblock %}
+        <link rel="stylesheet" href="{% static 'css/site.css' %}?v1.0.0">
+        {% if vss.google_services.recaptcha_site_key %}<script src='https://www.google.com/recaptcha/api.js'></script>{% endif %}
+        {% block page_head %}{% endblock %}
+        {{ vss.snippets.head_snippets|safe }}
+    </head>
+    <body>
+        {% block nav %}{% include "partials/nav.html" with nav_style='dark' %}{% endblock %}
+        {% block layout %}{% endblock %}
+        {% block footer %}{% include "partials/footer.html" %}{% endblock %}
+        <script src="{% static 'theme/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'js/site.js' %}"></script>
+        {% block page_scripts %}{% endblock %}
+        {{ vss.snippets.body_snippets|safe }}
+    </body>
+</html>

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ service.title }} {% translate 'Agenda una cita' %} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="text-magnolia-cream">{% translate 'Agenda una Cita' %}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-t-1 content-space-b-1">
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        <div class="row mb-5 mb-sm-5 justify-content-between">
+            <div class="col-12 col-lg-6">
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <strong>{% translate 'Error.' %}</strong> {% translate 'Revisa el formulario e intenta nuevamente.' %}
+                    </div>
+                {% endif %}
+                <h2 class="h3 mb-3">{% translate 'Datos de Contacto' %}</h2>
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        {% include "vss/dashboard/fields/field.html" with field=form.first_name %}
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        {% include "vss/dashboard/fields/field.html" with field=form.last_name %}
+                    </div>
+                    <div class="col-12">
+                        {% include "vss/dashboard/fields/field.html" with field=form.email %}
+                    </div>
+                    <div class="col-12">
+                        {% include "vss/dashboard/fields/field.html" with field=form.phone %}
+                    </div>
+                    <div class="col-12">
+                        {% include "vss/dashboard/fields/checkbox.html" with field=form.accept_terms %}
+                    </div>
+                </div>
+                <h2 class="h3 mt-4 mb-3">{% translate 'Cupón de Descuento' %}</h2>
+                <div class="row">
+                    <div class="col-12">
+                        {% include "vss/dashboard/fields/field.html" with field=form.code %}
+                    </div>
+                    <div class="col-12 col-lg-6 mb-5">
+                        <button type="submit" class="btn btn-info w-100 mt-5">{% translate 'Siguiente' %}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-5">
+                {% include "components/checkout_summary.html" %}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

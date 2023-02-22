@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ vss_studio.headers.index_title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-3">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-3 text-magnolia-cream">{{ vss_studio.headers.index_title }}</h1>
+                {% if vss_studio.headers.index_subtitle %}
+                    <p class="lead text-light text-opacity-75">{{ vss_studio.headers.index_subtitle }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% with vss.banners as banners %}
+    {% if banners %}
+    <div class="container content-space-1" style="margin-top: -10rem;">
+        <div class="card card-sm">
+            <div class="card-body">
+                <div class="js-swiper-vertical swiper" style="height: 37rem;">
+                    <div class="swiper-wrapper">
+                        {% for banner in banners %}
+                            <a href="{{ banner.url }}" class="swiper-slide"> 
+                                <img class="img-fluid" src="{{ banner.image.url }}" alt="{{ banner.title }}">
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="js-swiper-vertical-pagination swiper-pagination swiper-pagination-light"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endwith %}
+<div class="container content-space-t-auto content-space-b-2">
+    <div class="w-lg-65 text-center mx-lg-auto mb-7 mt-5">
+        <h3>{% translate 'Nuestras Sesiones' %}</h3>
+    </div>
+    <div class="row mb-5 mb-sm-5">
+        {% for service in vss_studio.bookable_services %}
+            <div class="col-sm-6 col-lg-4 mb-3 mb-lg-5">
+                {% include "components/service_card.html" with service=service offer=None %}
+            </div>
+            {% if forloop.counter|divisibleby:3 and not foloop.last %}</div><div class="row mb-5 mb-sm-5">{% endif %}
+        {% endfor %}
+    </div>
+    <div class="mx-auto">
+        <div class="alert alert-soft-danger" role="alert">
+            <div class="d-sm-flex align-items-sm-center">
+                <div class="flex-grow-1 text-dark ms-sm-3 mb-3 mb-sm-0">{% translate 'Contamos con precios especiales en sesiones y fechas seleccionadas.' %}</div>
+                <div class="flex-shrink-0 ms-sm-3">
+                    <a class="btn btn-danger" href="{% url 'vss_studio_offer_list' %}">{% translate 'Ver Promociones' %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% with articles=vss.blog.featured_articles %}
+    {% if articles %}
+    <div>
+        <div class="container content-space-b-3">
+            <div class="w-lg-65 text-center mx-lg-auto mb-7 mt-5">
+                <h3>{% translate 'Artículos del Blog' %}</h3>
+            </div>
+            {% for article in articles %}
+                {% include "components/article_card.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif%}
+{% endwith %}
+{% endblock %}

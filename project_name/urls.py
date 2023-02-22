@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.staticfiles.views import serve
 from django.urls import include, path
+from django.views.generic import TemplateView
 
 try:
     from vss.apps.blog.sitemaps import ArticleSitemap
@@ -23,6 +24,9 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('sitemap.xml/', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(
+        template_name='robots.txt', content_type='text/plain'),
+        name='robots'),
     
 ] + i18n_patterns(
     path('', include('vss.urls')),

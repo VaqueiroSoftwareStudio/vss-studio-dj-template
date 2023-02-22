@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ vss_studio.headers.contact_title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block page_head %}
+    {% if vss.google_services.recaptcha_site_key %}
+    <script>function onSubmit(token) {document.getElementById("captchaProtect").submit();}</script>
+    {% endif %}
+{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-65 w-lg-50 mx-md-auto">
+            <div class="text-center  mb-5">
+                <h1 class="display-3 text-magnolia-cream">{{ vss_studio.headers.contact_title }}</h1>
+                {% if vss_studio.headers.contact_subtitle %}
+                    <p class="lead text-light text-opacity-75">{{ vss_studio.headers.contact_subtitle }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-1 content-space-b-md-3" style="margin-top: -10rem;">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            {% include "partials/messages.html" %}
+            <div class="card card-lg">
+                <div class="card-body">
+                    {% if vss.contact.address %}
+                        <h5>{% translate 'Visítanos' %}</h5>
+                        <p>{{ vss.contact.address }}</p>
+                        {% if vss.contact.location %}
+                        <a href="{{ vss.contact.location }}" target="_blank" class="mb-5 d-inline-block text-decoration-underline">{% translate 'Ver mapa' %} <i class="bi-chevron-right small ms-1"></i></a>
+                        {% endif%}
+                    {% endif %}
+                    <h5>{% translate 'Escríbenos' %}</h5>
+                    <p>{% translate 'Utiliza este formulario para enviar un mensaje.' %}</p>
+                    <form action="" method="post" id="captchaProtect">
+                        {% csrf_token %}
+                        {% include "vss/dashboard/fields/form_fields.html" %}
+                        <div class="d-grid">
+                            {% if vss.google_services.recaptcha_site_key %}
+                            <button type="submit" class="btn btn-info btn-lg g-recaptcha" data-sitekey="{{ vss.google_services.recaptcha_site_key }}" data-callback="onSubmit" data-action="submit">{% translate 'Enviar' %}</button>
+                            {% else %}
+                            <button type="submit" class="btn btn-info btn-lg">{% translate 'Enviar' %}</button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "partials/faqs.html" %}
+{% include "partials/shape.html" %}
+{% endblock %}

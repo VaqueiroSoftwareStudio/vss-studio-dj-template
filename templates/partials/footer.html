@@ -1,0 +1,65 @@
+{% load i18n %}
+<footer class="bg-magnolia-green border-top border-white-10">
+    <div class="container">
+        <div class="row content-space-1">
+            <div class="col-12 col-lg-3 mb-7 mb-lg-0">
+                <div class="mb-5">
+                    <a class="navbar-brand" href="{% url 'vss_studio_index' %}" aria-label="{{ vss.branding.site_name }}">
+                        <img class="navbar-brand-logo" src="{{ vss.branding.get_logo_light }}" alt="{{ vss.branding.site_name }}">
+                    </a>
+                </div>
+            </div>
+            <div class="col-6 col-sm mb-7 mb-sm-0">
+                <span class="text-cap text-magnolia-cream fw-bold">{% translate 'Sesiones' %}</span>
+                <ul class="list-unstyled list-py-1 mb-0">
+                    {% for service in vss_studio.services %}
+                    <li>
+                        <a class="link-sm text-light" href="{{ service.get_absolute_url }}">{{ service.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-6 col-sm mb-7 mb-sm-0">
+                <span class="text-cap text-magnolia-cream fw-bold">{% translate 'Recursos' %}</span>
+                <ul class="list-unstyled list-py-1 mb-0">
+                    <li>
+                        <a class="link-sm text-light" href="{% url 'vss_article_list' %}">{% translate 'Blog' %}</a>
+                    </li>
+                    <li>
+                        <a class="link-sm text-light" href="{% url 'vss_studio_contact' %}">{% translate 'Contacto' %}</a>
+                    </li>
+                    <li>
+                        <a class="link-sm text-light" href="{% url 'vss_studio_offer_list' %}">{% translate 'Promociones' %}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6 col-sm">
+                <span class="text-cap text-magnolia-cream fw-bold">{% translate 'Políticas' %}</span>
+                <ul class="list-unstyled list-py-1 mb-0">
+                    {% for page in vss.text_pages %}
+                    <li>
+                        <a class="link-sm text-light" href="{{ page.get_absolute_url }}">{{ page.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="border-top border-white-10"></div>
+        <div class="row align-items-md-end py-5">
+            <div class="col-md mb-3 mb-md-0">
+                <p class="mb-0 text-light text-opacity-75">© {% now 'Y' %} {{ vss.branding.site_name }}. {% translate 'Todos los derechos reservados.' %}</p>
+            </div>
+            <div class="col-md d-md-flex justify-content-md-end">
+                <ul class="list-inline mb-0">
+                    {% for social in vss.social_networks %}
+                    <li class="list-inline-item">
+                        <a target="_blank" class="btn btn-icon btn-ghost-light rounded-circle" href="{{ social.url }}" title="{{ network.get_network_display }}">
+                            {{ social.icon|safe }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

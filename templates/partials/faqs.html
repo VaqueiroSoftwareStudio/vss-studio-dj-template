@@ -1,0 +1,36 @@
+{% load i18n %}
+{% with faqs=vss.faqs %}
+    {% if faqs %}
+        <div class="container">
+            <div class="w-lg-50 text-center mx-lg-auto mb-7">
+                <h3>{% translate 'Preguntas Frecuentes' %}</h3>
+            </div>
+            <div class="w-md-75 w-lg-65 mx-md-auto">
+                <div class="card card-lg">
+                    <div class="card-body">
+                        <div class="accordion accordion-flush" id="accordionFAQ">
+                            {% for faq in faqs %}
+                            <div class="accordion-item">
+                                <div class="accordion-header" id="accordionHeading{{ forloop.counter }}">
+                                    <a class="accordion-button collapsed" role="button" data-bs-toggle="collapse" data-bs-target="#accordionCollapse{{ forloop.counter }}" aria-expanded="false" aria-controls="accordionCollapse{{ forloop.counter }}">
+                                        {{ faq.question }}
+                                    </a>
+                                </div>
+                                <div id="accordionCollapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="accordionHeading{{ forloop.counter }}" data-bs-parent="#accordionFAQ">
+                                    <div class="accordion-body">
+                                        {{ faq.answer.html|safe }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-info text-center">
+                        <p class="mb-0 text-light">{% translate '¿Tienes otra pregunta?' %}</p>
+                        <a class="link text-light" href="{% url 'vss_studio_contact' %}">{% translate '¡Contáctanos!' %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}

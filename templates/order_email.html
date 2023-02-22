@@ -1,0 +1,143 @@
+{% extends "base_email.html" %}
+{% load humanize currency i18n %}
+{% block title %}{{ email_subject }}{% endblock %}
+{% block content %}
+{% with service=order.service payment_method=order.payment_method %}
+<p style="font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif; margin:0 0 16px;">
+    {% blocktranslate with name=site.name %}
+    Gracias por agendar tu sesión en {{ name }}; nos dará mucho gusto planearla y recibirte en nuestro estudio. Recuerda llegar puntualmente para aprovechar al máximo el tiempo de la sesión.
+    {% endblocktranslate %}
+</p>
+<p style="font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif; margin:0 0 16px;">
+    {% blocktranslate with address=contact_data.address %}
+    La sesión se llevará a cabo en nuestro estudio ubicado en {{ address }}.
+    {% endblocktranslate %}
+    <a href="{{ contact_data.location }}">{% translate '¡Ver ubicación!' %}</a>
+</p>
+<p style="font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif; margin:0 0 16px;">
+    {% blocktranslate with whatsapp=contact_data.whatsapp %}
+    Si tuvieras alguna duda puedes escribirnos por WhatsApp {{ whatsapp }}.
+    {% endblocktranslate %}
+</p>
+<h2 style="display:block;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;font-size:18px;font-weight:bold;line-height:130%;margin:16px 0 8px;text-align:left;color:#202020;">
+    Referencia #{{ order.number }}
+</h2>
+<table cellspacing="0" cellpadding="6" border="1" style="color:#636363;border:1px solid #e5e5e5;width:100%;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+    <tbody>
+        <tr>
+            <td colspan="2" style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                <img src="{{ protocol }}://{{ domain }}{{ service.cover.url }}" alt="{{ service.title }}" style="max-width:100%; height: auto;">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align:center;color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                <h3 style="display:block;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;font-size:28px;font-weight:bold;line-height:130%;margin:16px 0 8px;text-align:center;color:#202020;">{{ service.title }}</h3>
+            </td>
+        </tr>
+        {% if payment_method and order.is_pending %}
+        <tr style="color:#004085;background-color: #cce5ff;">
+            <td colspan="2" style="color:#004085;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+            <strong style="display:block;margin-bottom:15px; width:100%;">{% translate 'Instrucciones de Pago' %}</strong>
+            <p>{% translate 'Siguie las siguientes instrucciones para realizar tu pago y confirmar tu reserva:' %}</p>
+            {% if payment_method.is_bank_transfer %}
+            {{ payment_setup.bank_transfer_instructions|linebreaksbr }}
+            {% elif payment_method.is_deposit %}
+            {{ payment_setup.cash_deposit_instructions|linebreaksbr }}
+            {% endif %}
+        </tr>
+        {% endif %}
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Fecha' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ order.date|date:"d F Y" }}
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Hora' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ order.start_time }}
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Duración' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ service.duration_display }}
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Paquete' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ order.option_name }}
+            </td>
+        </tr>
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border-top:2px solid #000;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Precio' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border-top:2px solid #000;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                <small>$</small> {{ order.option_price|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+        {% if order.offer %}
+        <tr style="border-top:1px solid #000;">
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Promoción' %} {{ order.discount_pct_display }}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                - {{ order.offer_amt|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+        {% endif %}
+        {% for extra in order.extras.all %}
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {{ extra.name }}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ extra.price|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Extras' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                {{ order.extras_amt|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if order.coupon %}
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;">
+                {% translate 'Cupón' %} {{ order.coupon.code }}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;">
+                - {{ order.coupon_amt|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td style="color:#636363;padding:12px;text-align:left;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;word-wrap:break-word;font-weight:bold;">
+                {% translate 'Total' %}
+            </td>
+            <td style="color:#636363;padding:12px;text-align:right;vertical-align:middle;border:1px solid #eee;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;font-weight:bold;">
+                <small>$</small> {{ order.total|as_currency }} <small>{{ store_setup.currency }}</small>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p style="margin:0 0 16px;padding-top:60px;text-align:center;">
+    <a style="color:#fff;background-color:#692340;padding:10px 20px;font-size:18px; border-radius:6px; text-decoration:none;font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif;" href="{{ domain }}{{ detail_url }}">{% translate 'Detalles de la Cita' %}</a>
+</p>
+<p style="font-family:'Helvetica Neue',Helvetica,Roboto,Arial,sans-serif; margin:0 0 16px;">{{ site_data.site_name }}</p>
+{% endwith %}
+{% endblock %}

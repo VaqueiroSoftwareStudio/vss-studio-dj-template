@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ textpage.title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="container content-space-1 content-space-md-2">
+    <div class="card card-lg">
+        <div class="card-header bg-info">
+            <h1 class="card-title h2 text-white">{{ textpage.title }}</h1>
+            <p class="card-text text-white">{{ textpage.get_updated_display }}</p>
+        </div>
+        <div class="card-body">{{ textpage.content.html|safe }}</div>
+    </div>
+</div>
+{% endblock %}

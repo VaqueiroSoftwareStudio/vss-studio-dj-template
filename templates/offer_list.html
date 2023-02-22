@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ vss_studio.headers.offers_title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="display-3 text-magnolia-cream">{{ vss_studio.headers.offers_title }}</h1>
+                {% if vss_studio.headers.offers_subtitle %}
+                    <p class="lead text-light text-opacity-75">{{ vss_studio.headers.offers_subtitle }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-t-1 content-space-b-1">
+    <div class="row mb-5 mb-sm-5">
+        {% for offer in offers %}
+            <div class="col-sm-6 col-lg-4 mb-3 mb-lg-5">
+                {% include "components/service_card.html" with service=offer.service offer=offer %}
+            </div>
+            {% if forloop.counter|divisibleby:3 and not foloop.last %}</div><div class="row mb-5 mb-sm-5">{% endif %}
+        {% empty %}
+        <div class="col-12">
+            <div class="card card-sm mb-4">
+                <div class="card-body">
+                    <p class="lead">{% translate "Por el momento no tenemos promociones." %}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+</div>
+{% endblock %}

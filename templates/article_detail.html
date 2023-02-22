@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ article.title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block page_head %}
+    <meta property="og:title" content="{{ article.title }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:site_name" content="{{ vss.branding.site_name }}" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ article.title }}">
+    {% if article.cover %}
+    <meta property="og:image" content="{{ article.cover.url }}" />
+    <meta name="twitter:image" content="{{ article.cover.url }}">
+    {% endif %}
+    <script type="application/ld+json">{{ article_schema|safe }}</script>
+    {% if vss.google_services.recaptcha_site_key %}
+    <script>function onSubmit(token) {document.getElementById("captchaProtect").submit();}</script>
+    {% endif %}
+{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-1 content-space-md-2">
+        <div class="row justify-content-lg-center position-relative zi-2">
+            <div class="col-lg-8">
+                {% include "partials/messages.html" %}
+                <ul class="list-inline list-separator list-separator-light mb-4">
+                    <li class="list-inline-item">
+                        <a class="text-uppercase small text-light" href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <span class="text-uppercase small text-light">{{ article.get_updated_display }}</span>
+                    </li>
+                </ul>
+                <div class="mb-6">
+                    <h1 class="h2 text-magnolia-cream">{{ article.title }}</h1>
+                    {% if article.summary %}<div class="lead text-light text-opacity-75">{{ article.summary|linebreaks }}</div>{% endif %}
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <span class="avatar avatar-light avatar-circle">
+                            <span class="avatar-initials">{{ article.author.get_full_name|slice:1 }}</span>
+                          </span>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0 text-light">{{ article.author.get_full_name }}</h6>
+                    </div>
+                </div>
+                {% if article.cover %}
+                <div class="mt-5">
+                    <img class="img-fluid" src="{{ article.cover.url }}" alt="{{ article.title }}">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-1 content-space-md-3">
+    <div class="row justify-content-lg-center">
+        <div class="col-lg-8">{{ article.content.html|safe }}</div>
+    </div>
+</div>
+{% with featured_articles=vss.blog.featured_articles %}
+    {% if featured_articles %}
+    <div class="bg-soft-magnolia-cream">
+        <div class="container content-space-1 content-space-md-3">
+            <div class="w-lg-65 text-center mx-lg-auto mb-7">
+                <h3>{% translate 'Artículos destacados' %}</h3>
+            </div>
+            <div class="row">
+                {% for feat in featured_articles|slice:3 %}
+                <div class="col-sm-6 col-lg-4 mb-5 mb-lg-0">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            {% if feat.cover %}
+                            <div class="mb-5">
+                                <img class="img-fluid" src="{{ feat.cover.url }}" alt="{{ feat.title }}">
+                            </div>
+                            {% endif %}
+                            <ul class="list-inline list-separator mb-3">
+                                <li class="list-inline-item">
+                                    <a class="text-cap text-muted mb-0" href="{{ feat.category.get_absolute_url }}">{{ feat.category.name }}</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <span class="text-cap text-muted mb-0">{{ feat.get_updated_display }}</span>
+                                </li>
+                            </ul>
+                            <h5 class="card-title">
+                                <a class="text-dark" href="{{ feat.get_absolute_url }}">{{ feat.title }}</a>
+                            </h5>
+                            {% if feat.summary %}<div class="card-text">{{ feat.summary|linebreaks }}</div>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endwith %}
+{% with comments=article.get_comments %}
+    {% if comments %}
+    <div class="container content-space-md-3 content-space-1">
+        <div class="w-lg-65 text-center mx-lg-auto mb-7">
+            <h3>{% translate 'Comentarios' %}</h3>
+        </div>
+        <div class="row justify-content-lg-center">
+            <div class="col-lg-8">
+                <ul class="list-comment">
+                    {% for comment in comments %}
+                    <li class="list-comment-item">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <span class="avatar avatar-soft-dark avatar-circle">
+                                    <span class="avatar-initials">{{ comment.get_user_name|slice:1 }}</span>
+                                </span>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6>{{ comment.get_user_name }}</h6>
+                                    <span class="d-block small text-muted">{{ comment.get_created_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {{ comment.get_comment|linebreaks }}    
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endwith %}
+<div class="container content-space-b-1 content-space-b-md-3">
+    <div class="w-lg-65 text-center mx-lg-auto mb-7">
+        <h3>{% translate 'Deja un comentario' %}</h3>
+    </div>
+    <div class="row justify-content-lg-center">
+        <div class="col-lg-8">
+            <div class="card card-lg card-bordered shadow-none">
+                <div class="card-body">
+                    <form id="captchaProtect" action="{% url 'vss_articlecomment_create' article.pk %}" method="post">
+                        {% csrf_token %}
+                        {% include "vss/dashboard/fields/form_fields.html" %}
+                        {% if vss.google_services.recaptcha_site_key %}
+                        <button type="submit" class="btn btn-info w-100 g-recaptcha" data-sitekey="{{ vss.google_services.recaptcha_site_key }}" data-callback="onSubmit" data-action="submit">{% translate 'Enviar' %}</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-info w-100">{% translate 'Enviar' %}</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

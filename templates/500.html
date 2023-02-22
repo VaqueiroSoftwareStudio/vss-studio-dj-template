@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{% translate 'Error 500. Error interno del servidor.' %} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-3">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-3 text-light">{% translate 'Error 500. Error interno del servidor.' %}</h1>
+                <a href="{% url 'vss_studio_index' %}" class="text-decoration-underline text-light lead">{% translate 'Ver inicio' %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

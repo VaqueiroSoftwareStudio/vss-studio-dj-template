@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load i18n offer_tags %}
+{% block page_title %}{{ service.title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block page_vendor_css %}
+<link href="{{ STATIC_URL }}vendor/flatpickr/flatpickr.min.css" rel="stylesheet">
+{% endblock %}
+{% block page_head %}
+    <meta property="og:title" content="{{ service.title }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:site_name" content="{{ vss.branding.site_name }}" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ service.title }}">
+    {% if service.cover %}
+    <meta property="og:image" content="{{ service.cover.url }}" />
+    <meta name="twitter:image" content="{{ service.cover.url }}">
+    {% endif %}
+{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="text-magnolia-cream">{{ service.title }}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% if service.allow_booking %}
+    {# NOTE: Una sesión que los visitantes pueden reservar #}
+    <div class="container content-space-t-1 content-space-b-1">
+        <div class="row mb-5 mb-sm-5">
+            <div class="col-12 col-md-6 col-lg-8">
+                <img class="img-fluid mb-7" src="{{ service.cover.url }}" alt="{{ service.title }}">
+                {% with images=service.images.all %}
+                    {% if images %}
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <div class="js-swiper-slides-per-view swiper">
+                                <div class="swiper-wrapper">
+                                    {% for image in images %}
+                                    <div class="swiper-slide">
+                                        <a data-fslightbox="gallery" href="{{ image.image.url }}">
+                                            <img class="img-fluid" src="{{ image.image.url }}" alt="{% translate 'Galería' %} {{ forloop.counter }}">
+                                        </a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="js-swiper-slides-per-view-button-next swiper-button-next"></div>
+                                <div class="js-swiper-slides-per-view-button-prev swiper-button-prev"></div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endwith %}
+                <div>{{ service.description.html|safe }}</div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4" role="alert">
+                        <strong>{% translate 'Error.' %}</strong> {% translate 'Revisa el formulario e intenta nuevamente.' %}
+                    </div>
+                {% endif %}
+                <div class="card card-lg">
+                    <form action="" method="post">
+                        <div id="bookingForm" class="card-header bg-info border">
+                            <h5 class="card-title text-center text-light mb-0">{% translate 'Agenda una cita' %}</h5>
+                        </div>
+                        <div class="card-body border">
+                            {% if offer %}
+                            <div class="row">
+                                <div class="col-12 text-start bg-magnolia-cream text-dark fw-bold rounded-top"><small>{% translate '¡Oferta!' %}</small></div>
+                            </div>
+                            <div class="row align-items-center mb-3 badge d-flex bg-warning rounded-0 rounded-bottom">
+                                <div class="col-8 text-start">
+                                    <span class="text-light fs-6 fw-light">{{ offer.validity_short_description }}</span>
+                                </div>
+                                <div class="col-4 border-start text-end">
+                                    <span>
+                                        <span class="fs-4 text-light fw-bold">-{{ offer.discount }}</span>
+                                        <span class="fs-6 align-top text-light fw-bold">%</span>
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <table class="table table-align-middle">
+                                <tbody>
+                                    <tr>
+                                        <th class="lh-1 py-2 px-0 fw-bold">{% translate 'Duración' %}</th>
+                                        <td class="lh-1 py-2 px-0 text-end">{{ service.duration_display }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% csrf_token %}
+                            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                            {% include "vss/dashboard/fields/field.html" with field=form.date %}
+                            <div class="form-group">
+                                <label for="id_hour" class="form-label w-100">{% translate 'Elige el horario de tu sesión' %} <span class="form-req">*</span></label>
+                                <select name="hour" class="form-select {% if form.time.errors %}is-invalid{% endif %}" id="id_hour">
+                                    {% if hour_options %}
+                                        {% for o in hour_options%}{{ o|safe }}{% endfor %}
+                                    {% else %}
+                                    <option value="">--- {% translate 'Selecciona una Fecha' %} ---</option>
+                                    {% endif %}
+                                </select>
+                                {% if form.time.errors %}
+                                    {% for e in form.time.errors %}
+                                        <div class="invalid-feedback">{{ e }}</div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% with field=form.option %}
+                            <div class="my-3">
+                                {% if field.label %}<label class="form-label w-100">{{ field.label }} {% if field.field.required %}<abbr title="Obligatorio">*</abbr>{% endif %}</label>{% endif %}
+                                {% if field.help_text %}
+                                    <div class="text-muted mb-2">{{ field.help_text|safe }}</div>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="text-danger text-lighter mb-2">{% for e in field.errors %}{{ e }}{% endfor %}</div>
+                                {% endif %}
+                                {% for opt in field.field.queryset %}   
+                                    <label class="form-control mb-1" for="id_option_{{ forloop.counter0 }}">
+                                        <span class="form-check">
+                                            <input type="radio" name="option" value="{{ opt.pk }}" class="form-check-input" id="id_option_{{ forloop.counter0 }}" required="">
+                                            <span class="d-flex justify-content-between">
+                                                <span>{{ opt.name }}</span>
+                                                <span>
+                                                    {% if offer %}
+                                                    <span class="text-decoration-line-through text-muted me-1">
+                                                        <span span style="font-size:12px;">$</span>
+                                                        <span>{{ opt.price_display }}</span>
+                                                    </span>
+                                                    <span style="font-size:12px;">$</span>
+                                                    <span>{% discounted_price opt.price offer %}</span>
+                                                    {% else %}
+                                                    <span span style="font-size:12px;">$</span>
+                                                    <span>{{ opt.price_display }}</span>
+                                                    {% endif %}
+                                                </span>
+                                            </span>
+                                        </span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% endwith %}
+                            {% include "vss/dashboard/fields/checkbox_multiple.html" with field=form.extras %}
+                        </div>
+                        <div class="card-footer border">
+                            <button class="btn btn-info w-100" type="submit">{% translate 'Reservar ahora' %}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "partials/faqs.html" %}
+    {% include "partials/shape.html" %}
+{% else %}
+<div class="container content-space-t-1 content-space-b-1">
+    <div class="row mb-5 mb-sm-5">
+        <div class="col-12 col-md-6 col-lg-7">
+            <img class="img-fluid mb-7" src="{{ service.cover.url }}" alt="{{ service.title }}">
+                {% with images=service.images.all %}
+                    <div class="row">
+                    {% if images %}
+                        {% for image in images %}
+                            <div class="col-6 col-sm-4 mb-3">
+                                <a data-fslightbox="gallery" href="{{ image.image.url }}">
+                                    <img class="img-fluid" src="{{ image.image.url }}" alt="{% translate 'Galería' %} {{ forloop.conter0 }}">
+                                </a>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    </div>
+                {% endwith %}
+        </div>
+        <div class="col-12 col-md-6 col-lg-5">
+            <div>{{ service.description.html|safe }}</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block page_vendor_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}vendor/flatpickr/flatpickr.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}vendor/flatpickr/es.js"></script>
+{% endblock %}
+{% block page_scripts %}
+<script type="text/javascript">
+    flatpickr(".flatpickr", {
+        "locale":"{{ LANGUAGE_CODE|lower }}",
+        "disable": {{ unavailable_dates|default:'[]'|safe }}
+    });
+    document.getElementById("id_date").addEventListener('change', (ev) => {
+        let url = "{% url 'vss_studio_availability' service.slug %}?date=" + ev.target.value; 
+        const xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.send();
+        xhttp.onload = (e) => {
+            var data = JSON.parse(xhttp.response);
+            document.getElementById("id_hour").innerHTML = data.choices;
+        };
+    });
+    document.getElementById("id_hour").addEventListener('change', (ev) => {
+        document.getElementById("id_time").value =  ev.target.value;
+    });
+</script>
+{% endblock %}

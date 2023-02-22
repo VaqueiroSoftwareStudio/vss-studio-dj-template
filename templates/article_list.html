@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block page_title %}{{ vss_studio.headers.blog_title }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-1 content-space-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-3 text-magnolia-cream">{{ vss_studio.headers.blog_title }}</h1>
+                {% if vss_studio.headers.blog_subtitle %}
+                    <p class="lead text-light text-opacity-75">{{ vss_studio.headers.blog_subtitle }}</p>
+                {% endif %}
+                {% if category %}
+                    <a href="{% url 'vss_article_list' %}" class="btn btn-secondary rounded-pill mt-4">{{ category.name }} <i class="bi bi-x-circle"></i></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container content-space-1" style="margin-top: -8rem;">
+    {% with blog_articles=articles %}
+        {% if blog_articles %}
+            {% for article in blog_articles %}
+                {% include "components/article_card.html" %}
+            {% endfor %}
+        {% else %}
+            <div class="card card-sm mb-4">
+                <div class="card-body">
+                    <p class="lead">{% translate "Sin artículos en el blog." %}</p>
+                </div>
+            </div>
+        {% endif %}
+        {% include "partials/pagination.html" %}
+    {% endwith %}
+</div>
+{% endblock %}

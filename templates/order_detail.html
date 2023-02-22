@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load i18n currency %}
+{% block page_title %}{% translate 'Pedido' %} {{ order.number }} | {{ vss.branding.site_name }}{% endblock %}
+{% block layout %}
+<div class="bg-magnolia-green overflow-hidden">
+    <div class="container position-relative content-space-t-1 content-space-b-3 content-space-t-md-2 content-space-b-md-2">
+        <div class="w-md-85 w-lg-75 mx-md-auto">
+            <div class="text-center">
+                <h1 class="text-magnolia-cream">{% translate 'Pedido' %} {{ order.number }}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% with service=order.service payment_method=order.payment_method %}
+<div class="container content-space-t-1 content-space-b-1">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            {% include "partials/messages.html" %}
+            <div class="card card-lg">
+                <img class="card-img-top" src="{{ service.cover.url }}" alt="{{ service.title }}">
+                <div class="card-body border rounded-bottom">
+                    <h2 class="h4 card-title text-center mb-2">{{ service.title }}</h2>
+                    {% if payment_method and order.is_pending %}
+                        <div class="alert alert-soft-success mt-5 mb-3" role="alert">
+                            <h3 class="alert-heading h6">{% translate 'Instrucciones de pago' %}</h3>
+                            <p>{% translate 'Siguie las siguientes instrucciones para realizar tu pago y confirmar tu reserva.' %}</p>
+                            {% if payment_method.is_bank_transfer %}
+                            {{ vss_studio.payment_setup.bank_transfer_instructions|linebreaksbr }}
+                            {% elif payment_method.is_deposit %}
+                            {{ vss_studio.payment_setup.cash_deposit_instructions|linebreaksbr }}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <table class="table table-align-middle mb-4">
+                        <tbody>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Fecha' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.date|date:"d F Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Hora' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.start_time }}</td>
+                            </tr>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Duración' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ service.duration_display }}</td>
+                            </tr>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Paquete' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.option_name }}</td>
+                            </tr>
+                            <tr class="table-group-divider">
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Precio' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end"><small>$</small> {{ order.option_price|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                            {% if order.offer %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0">{% translate 'Promoción' %} {{ order.discount_pct_display }}</th>
+                                <td class="lh-1 py-3 px-0 text-end">- {{ order.offer_amt|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                            {% endif %}
+                            {% for extra in order.extras.all %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0">{{ extra.name }}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ extra.price|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Extras' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.extras_amt|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                            {% endfor %}
+                            {% if order.coupon %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0">{% translate 'Cupón' %} {{ order.coupon.code }}</th>
+                                <td class="lh-1 py-3 px-0 text-end">- {{ order.coupon_amt|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                            {% endif %}
+                            <tr class="table-group-divider">
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Total' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end"><small>$</small> {{ order.total|as_currency }} <small>{{ vss_studio.store_setup.currency }}</small></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h2 class="h4 card-title text-center mb-2">{% translate 'Datos del Cliente' %}</h2>
+                    <table class="table table-align-middle mb-4">
+                        <tbody>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Nombre' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.customer.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Teléfono' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.customer.phone_format }}</td>
+                            </tr>
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Email' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.customer.email }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h2 class="h4 card-title text-center mb-2">{% translate 'Datos del Pago' %}</h2>
+                    <table class="table table-align-middle mb-4">
+                        <tbody>
+                            {% if payment_method %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Método de pago' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ payment_method.get_payment_method_display }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th class="lh-1 py-3 px-0 fw-bold">{% translate 'Estatus' %}</th>
+                                <td class="lh-1 py-3 px-0 text-end">{{ order.get_payment_status_html|safe }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endwith %}
+{% endblock %}
