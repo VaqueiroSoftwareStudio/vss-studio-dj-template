@@ -356,4 +356,7 @@ VSS_DASHBOARD_BANNER = 'vss_studio/img/vss_banner.png'
 
 # NOTE: Necesitamos este setting en django 4.0+ para que el popup de PayPal funcione correctamente.
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+
 PAYPAL_SANDBOX_CLIENT_ID = '<<PAYPAL_SANDBOX_CLIENT_ID>>'
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760 # 10MB
